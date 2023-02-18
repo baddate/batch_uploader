@@ -1,4 +1,4 @@
-const token = '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';
+const token = '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';
 const repoName = 'batch_uploader';
 const username = 'baddate';
 
