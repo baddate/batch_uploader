@@ -33,7 +33,7 @@ async function uploadFileToGithub(file) {
 async function uploadFiles() {
   // 获取文件上传表单中的文件
   const files = document.getElementById('file-input').files;
-
+  console.log(${files});
   // 检查是否选择了文件
   if (files.length === 0) {
     alert('请选择需要上传的文件');
