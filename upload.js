@@ -31,7 +31,7 @@ async function readFile(file) {
 }
 
 async function createFile(filename, content) {
-  const response = await fetch('https://api.github.com/repos/:owner/:repo/contents/' + filename, {
+  const response = await fetch('https://api.github.com/repos/baddate/batch_uploader/contents/' + filename, {
     method: 'PUT',
     headers: {
       Authorization: 'Bearer :token',
