@@ -1,51 +1,53 @@
-const form = document.querySelector('form');
+const token = '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';
+const repoName = 'batch_uploader';
+const username = 'baddate';
 
-form.addEventListener('submit', async (event) => {
-  event.preventDefault();
+async function uploadFileToGithub(file) {
+  const content = await file.arrayBuffer();
+  const encodedContent = btoa(String.fromCharCode.apply(null, new Uint8Array(content)));
 
-  const files = event.target.elements['files[]'].files;
+  const path = file.webkitRelativePath || file.name;
+  const message = `Upload ${path}`;
 
-  for (const file of files) {
-    const content = await readFile(file);
+  const url = `https://api.github.com/repos/${username}/${repoName}/contents/${path}`;
 
-    await createFile(file.name, content);
-  }
-
-  alert('Upload successful!');
-});
-
-async function readFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      resolve(reader.result);
-    };
-
-    reader.onerror = () => {
-      reject(reader.error);
-    };
-
-    reader.readAsText(file);
-  });
-}
-
-async function createFile(filename, content) {
-  const response = await fetch('https://api.github.com/repos/baddate/batch_uploader/contents/' + filename, {
+  const response = await fetch(url, {
     method: 'PUT',
     headers: {
-      Authorization: 'Bearer :d8e41bdfd90cd702600f25eff5de5bd4799f0549',
       'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      message: 'Add ' + filename,
-      content: btoa(content),
+      message,
+      content: encodedContent,
     }),
   });
 
-  if (!response.ok) {
-    const message = await response.text();
-
-    throw new Error(message);
+  if (response.ok) {
+    console.log(`${path} uploaded to GitHub with status code ${response.status}`);
+  } else {
+    console.error(`Error uploading ${path} to GitHub: ${response.statusText}`);
   }
 }
+
+async function uploadFiles() {
+  // 获取文件上传表单中的文件
+  const files = document.getElementById('file-input').files;
+
+  // 检查是否选择了文件
+  if (files.length === 0) {
+    alert('请选择需要上传的文件');
+    return;
+  }
+
+  // 循环上传每个文件
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    await uploadFileToGithub(file);
+  }
+
+  console.log('All files uploaded to GitHub');
+}
+
+// 添加事件监听器，等待上传按钮被点击
+document.getElementById('upload-button').addEventListener('click', uploadFiles);
