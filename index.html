@@ -1,14 +1,102 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Batch Upload to GitHub</title>
+    <meta charset="UTF-8">
+    <title>GitHub 文件上传</title>
+    <style>
+      /* 设置样式，用于美化上传表单 */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      #form-wrapper {
+        margin: 10% auto;
+        max-width: 600px;
+        background-color: #f1f1f1;
+        padding: 20px;
+        border-radius: 10px;
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      input[type="file"] {
+        margin: 10px 0;
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: none;
+        background-color: #dcdcdc;
+      }
+
+      input[type="submit"] {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #45a049;
+      }
+    </style>
   </head>
   <body>
-    <form method="post" enctype="multipart/form-data">
-      <input type="file" name="files[]" multiple>
-      <br>
-      <button type="submit">Upload</button>
-    </form>
+    <div id="form-wrapper">
+      <h1>批量上传文件到 GitHub</h1>
+      <form method="post" action="#" enctype="multipart/form-data" onsubmit="return uploadFiles()">
+        <input type="file" id="file-input" name="file-input" multiple>
+        <input type="submit" value="上传">
+      </form>
+    </div>
+    <script>
+      function uploadFiles() {
+        // 获取文件上传表单中的文件
+        const files = document.getElementById('file-input').files;
+
+        // 检查是否选择了文件
+        if (files.length === 0) {
+          alert('请选择需要上传的文件');
+          return false;
+        }
+
+        // 循环上传每个文件
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const reader = new FileReader();
+
+          // 读取文件内容，使用 FormData 构造请求体
+          reader.onload = function() {
+            const formData = new FormData();
+            formData.append('message', `Upload ${file.name}`);
+            formData.append('content', btoa(reader.result));
+            formData.append('path', file.name);
+
+            // 发送 POST 请求，将文件上传到仓库
+            fetch('/upload', {
+              method: 'POST',
+              body: formData
+            }).then(response => {
+              console.log(`${file.name} uploaded to GitHub with status code ${response.status}`);
+            }).catch(error => {
+              console.error(error);
+            });
+          };
+          reader.readAsBinaryString(file);
+        }
+
+        // 防止表单提交
+        return false;
+      }
+    </script>
   </body>
-  <script src="upload.js"></script>
 </html>
