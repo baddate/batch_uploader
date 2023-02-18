@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>批量上传文件到GitHub</title>
+    <title>批量上传文件到 GitHub</title>
     <style>
       /* 设置样式，用于美化上传表单 */
       body {
@@ -58,57 +58,6 @@
         <input type="submit" value="上传">
       </form>
     </div>
-    <script>
-function uploadFiles() {
-  // 获取文件上传表单中的文件
-  const files = document.getElementById('file-input').files;
-
-  // 检查是否选择了文件
-  if (files.length === 0) {
-    alert('请选择需要上传的文件');
-    return false;
-  }
-
-  // 构造请求头，设置授权信息
-  const token = 'd8e41bdfd90cd702600f25eff5de5bd4799f0549';
-  const headers = {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  };
-
-  // 循环上传每个文件
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const reader = new FileReader();
-
-    // 读取文件内容，构造请求体
-    reader.onload = function() {
-      const content = btoa(reader.result);
-      const path = `batch_uploader/${file.name}`;
-      const message = `Upload ${file.name}`;
-      const body = JSON.stringify({
-        message,
-        content,
-        path
-      });
-
-      // 发送 POST 请求，将文件上传到仓库
-      fetch('https://api.github.com/repos/baddate/batch_uploader/contents/' + path, {
-        method: 'POST',
-        headers,
-        body
-      }).then(response => {
-        console.log(`${file.name} uploaded to GitHub with status code ${response.status}`);
-      }).catch(error => {
-        console.error(error);
-      });
-    };
-    reader.readAsBinaryString(file);
-  }
-
-  // 防止表单提交
-  return false;
-}
-      </script>
- </body>
+    <script src="github_upload.js"></script>
+  </body>
 </html>
