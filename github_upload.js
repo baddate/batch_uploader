@@ -1,4 +1,4 @@
-const token = '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';
+const token = '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';
 const repoName = 'batch_uploader';
 const username = 'baddate';
 
@@ -33,7 +33,7 @@ async function uploadFileToGithub(file) {
 async function uploadFiles() {
   // 获取文件上传表单中的文件
   const files = document.getElementById('file-input').files;
-  console.log(${files});
+
   // 检查是否选择了文件
   if (files.length === 0) {
     alert('请选择需要上传的文件');
@@ -43,6 +43,7 @@ async function uploadFiles() {
   // 循环上传每个文件
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
+    console.log(`${file.name}`);
     await uploadFileToGithub(file);
   }
 
